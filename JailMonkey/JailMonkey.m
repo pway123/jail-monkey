@@ -46,6 +46,35 @@ RCT_EXPORT_MODULE();
              @"/usr/sbin/sshd",
              @"/etc/apt",
              @"/private/var/lib/apt",
+             @"/private/var/stash",
+             @"/private/var/tmp/cydia.log",
+             @"/private/var/lib/cydia",
+             @"/private/var/mobile/Library/SBSettings/Themes",
+             @"/Library/MobileSubstrate/MobileSubstrate.dylib",
+             @"/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
+             @"/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+             @"/System/Library/LaunchDaemons/com.ikey.bbot.plist",
+             @"/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
+             @"/var/cache/apt",
+             @"/var/lib/apt",
+             @"/var/lib/cydia",
+             @"/var/log/syslog",
+             @"/var/tmp/cydia.log",
+             @"/bin/sh",
+             @"/usr/sbin/sshd",
+             @"/usr/libexec/ssh-keysign",
+             @"/usr/sbin/sshd",
+             @"/usr/bin/sshd",
+             @"/usr/libexec/sftp-server",
+             @"/etc/ssh/sshd_config",
+             @"/Applications/RockApp.app",
+             @"/Applications/Icy.app",
+             @"/Applications/WinterBoard.app",
+             @"/Applications/SBSettings.app",
+             @"/Applications/MxTube.app",
+             @"/Applications/IntelliScreen.app",
+             @"/Applications/FakeCarrier.app",
+             @"/Applications/blackra1n.app"
              ];
 }
 
@@ -54,6 +83,27 @@ RCT_EXPORT_MODULE();
     return @[
              @"cydia://package/com.example.package",
              ];
+}
+
+- (BOOL)newCheckPaths
+{
+    BOOL existsPath = NO;
+    NSError *errorObj;
+    
+    for(NSString *path in [self pathsToCheck]){
+        NSDictionary<NSFileAttributeKey,id> *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&errorObj];
+        
+        for(NSString *key in dict){
+            //id value = dict[key];
+            existsPath = YES;
+        }
+        
+        if(errorObj.code==257){
+            existsPath = YES;
+        }
+    }
+    
+    return existsPath;
 }
 
 - (BOOL)checkPaths
@@ -101,7 +151,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (BOOL)isJailBroken{
-    return [self checkPaths] || [self checkSchemes] || [self canViolateSandbox];
+    return [self checkPaths] || [self checkSchemes] || [self canViolateSandbox] || [self newCheckPaths];
 }
 
 /*
