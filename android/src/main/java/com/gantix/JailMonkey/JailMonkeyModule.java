@@ -53,7 +53,7 @@ public class JailMonkeyModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleDebugCheck(Promise promise) {
+  public void scheduleDebugCheck() {
     final Context ctx = getReactApplicationContext();
     final Activity activity = getCurrentActivity();
 
@@ -68,8 +68,6 @@ public class JailMonkeyModule extends ReactContextBaseJavaModule {
         }
       }
     }, 0, 15, TimeUnit.SECONDS);
-
-    promise.resolve("scheduled");
   }
   
 }
