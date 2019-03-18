@@ -37,6 +37,13 @@ RCT_EXPORT_MODULE();
     return YES;
 }
 
+- (NSArray *)debuggerPathToCheck
+{
+    return @[
+             @"/var/lib/cydia"
+             ];
+}
+
 - (NSArray *)pathsToCheck
 {
     return @[
@@ -85,12 +92,12 @@ RCT_EXPORT_MODULE();
              ];
 }
 
-- (BOOL)newCheckPaths
+- (BOOL)isBlacklistedPaths:(NSArray *)pathArray
 {
     BOOL existsPath = NO;
     NSError *errorObj;
     
-    for(NSString *path in [self pathsToCheck]){
+    for(NSString *path in pathArray){
         NSDictionary<NSFileAttributeKey,id> *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&errorObj];
         
         for(NSString *key in dict){
@@ -102,7 +109,7 @@ RCT_EXPORT_MODULE();
             existsPath = YES;
         }
     }
-    
+ 
     return existsPath;
 }
 
@@ -151,7 +158,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (BOOL)isJailBroken{
-    return [self checkPaths] || [self checkSchemes] || [self canViolateSandbox] || [self newCheckPaths];
+    NSArray* pathToCheck = [self pathsToCheck];
+    return [self checkPaths] || [self checkSchemes] || [self canViolateSandbox] || [self isBlacklistedPaths:pathToCheck];
 }
 
 /*
@@ -201,7 +209,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (BOOL)isDebuggerAttached{
-    return [self checkPtrace] || [self checkSysctl];
+    NSArray* pathToCheck = [self debuggerPathToCheck];
+    return [self checkPtrace] || [self checkSysctl] || [self isBlacklistedPaths:pathToCheck];
 }
 
 - (NSDictionary *)constantsToExport
