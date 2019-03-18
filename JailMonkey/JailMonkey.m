@@ -9,24 +9,9 @@
 #import "JailMonkey.h"
 @import UIKit;
 
-// For debugger detection
-#import <dlfcn.h>
-#import <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/sysctl.h>
-#include <unistd.h>
-
 static NSString * const JMJailbreakTextFile = @"/private/jailbreak.txt";
 static NSString * const JMisJailBronkenKey = @"isJailBroken";
 static NSString * const JMCanMockLocationKey = @"canMockLocation";
-static NSString * const JMisDebuggerAttachedKey = @"isDebuggerAttached";
-
-typedef int (*ptrace_ptr_t)(int _request, pid_t _pid, caddr_t _addr, int _data);
-
-#if !defined(PT_DENY_ATTACH)
-#define PT_DENY_ATTACH 31
-#endif  // !defined(PT_DENY_ATTACH)
 
 @implementation JailMonkey
 
@@ -102,7 +87,7 @@ RCT_EXPORT_MODULE();
             existsPath = YES;
         }
     }
- 
+    
     return existsPath;
 }
 
@@ -135,15 +120,15 @@ RCT_EXPORT_MODULE();
 }
 
 - (BOOL)canViolateSandbox{
-	NSError *error;
+    NSError *error;
     BOOL grantsToWrite = NO;
-	NSString *stringToBeWritten = @"This is an anti-spoofing test.";
-	[stringToBeWritten writeToFile:JMJailbreakTextFile atomically:YES
-						  encoding:NSUTF8StringEncoding error:&error];
-	if(!error){
-		//Device is jailbroken
-		grantsToWrite = YES;
-	}
+    NSString *stringToBeWritten = @"This is an anti-spoofing test.";
+    [stringToBeWritten writeToFile:JMJailbreakTextFile atomically:YES
+                          encoding:NSUTF8StringEncoding error:&error];
+    if(!error){
+        //Device is jailbroken
+        grantsToWrite = YES;
+    }
     
     [[NSFileManager defaultManager] removeItemAtPath:JMJailbreakTextFile error:nil];
     
@@ -157,10 +142,11 @@ RCT_EXPORT_MODULE();
 
 - (NSDictionary *)constantsToExport
 {
-	return @{
-			 JMisJailBronkenKey: @(self.isJailBroken),
-			 JMCanMockLocationKey: @(self.isJailBroken)
-			 };
+    return @{
+             JMisJailBronkenKey: @(self.isJailBroken),
+             JMCanMockLocationKey: @(self.isJailBroken)
+             };
 }
 
 @end
+
