@@ -1,5 +1,6 @@
 package com.gantix.JailMonkey.Debug;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -8,13 +9,33 @@ import android.os.Debug;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class DebugCheck {
 
     private static String TRACER_PID = "TracerPid";
 
+    public static void runScheduleDebugCheck(Context context, Activity activity) {
+        final Context ctx = context;
+        final Activity currentActivity = activity;
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+            scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                if (isDebuggerAttached(ctx)) {
+                    currentActivity.finishAffinity();
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(0);
+                }
+            }
+            }, 0, 15, TimeUnit.SECONDS);
+    }
+
     public static boolean isDebuggerAttached(Context context) {
-        return hasTracerPid() || isDebuggerConnected() || isDebuggableInManifest(context);
+         return hasTracerPid() || isDebuggerConnected() || isDebuggableInManifest(context);
     }
 
     private static boolean hasTracerPid() {
