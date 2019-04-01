@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.io.*;
 
 import static com.gantix.JailMonkey.ExternalStorage.ExternalStorageCheck.isOnExternalStorage;
 import static com.gantix.JailMonkey.MockLocation.MockLocationCheck.isMockLocationOn;
@@ -22,17 +23,27 @@ public class JailMonkeyModule extends ReactContextBaseJavaModule {
     return "JailMonkey";
   }
 
+  public boolean isMagiskHidden(){
+    try {
+      File file = new File("/sbin");
+
+      return((file.length()==0) && (file.lastModified()!=0));
+    }
+    catch(Exception e){
+      return false;
+    }
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     ReactContext context = getReactApplicationContext();
     final Map<String, Object> constants = new HashMap<>();
-    constants.put("isJailBroken", isJailBroken(context));
+    boolean jailBreak = isJailBroken(context);
+    boolean isMagiskHidden = isMagiskHidden();
+
+    constants.put("isJailBroken", jailBreak || isMagiskHidden);
     constants.put("canMockLocation", isMockLocationOn(context));
     constants.put("isOnExternalStorage", isOnExternalStorage(context));
     return constants;
   }
-
-//  public static void runScheduleDebugCheck(Context context, Activity activity) {
-//    DebugCheck.scheduleDebugCheck(ctx, activity);
-//  }
 }
