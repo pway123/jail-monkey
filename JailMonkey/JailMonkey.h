@@ -16,4 +16,6 @@
 
 @interface JailMonkey : NSObject <RCTBridgeModule>
 
++ (BOOL)isDebuggerAttached;
+
 @end

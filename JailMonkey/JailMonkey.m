@@ -165,19 +165,19 @@ RCT_EXPORT_MODULE();
 /*
  * Ref: https://github.com/vtky/ios-antidebugging/blob/master/antidebugging/main.m
 */
-- (BOOL)checkPtrace{
++ (BOOL)checkPtrace{
   void* handle = dlopen(0, RTLD_GLOBAL | RTLD_NOW);
   ptrace_ptr_t ptrace_ptr = dlsym(handle, "ptrace");
   ptrace_ptr(PT_DENY_ATTACH, 0, 0, 0);
   dlclose(handle);
-  
+
   return NO;
 }
 
 /*
  * Ref: https://github.com/vtky/ios-antidebugging/blob/master/antidebugging/main.m
 */
-- (BOOL)checkSysctl{
++ (BOOL)checkSysctl{
   int mib[4];
   struct kinfo_proc info;
   size_t info_size = sizeof(info);
@@ -197,28 +197,29 @@ RCT_EXPORT_MODULE();
 
   // Call sysctl.
 
-  if (sysctl(mib, 4, &info, &info_size, NULL, 0) == -1)
+  if (sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &info_size, NULL, 0) == -1)
   {
       perror("perror sysctl");
       exit(-1);
   }
 
   // We're being debugged if the P_TRACED flag is set.
-  
-  return ((info.kp_proc.p_flag & P_TRACED) != 0);
+    if((info.kp_proc.p_flag & P_TRACED) != 0){
+        exit(-1);
+    }
+    
+  return NO;
 }
 
-- (BOOL)isDebuggerAttached{
-    NSArray* pathToCheck = [self debuggerPathToCheck];
-    return [self checkPtrace] || [self checkSysctl] || [self isBlacklistedPaths:pathToCheck];
++ (BOOL)isDebuggerAttached{
+    return  [self checkPtrace] || [self checkSysctl] ;
 }
 
 - (NSDictionary *)constantsToExport
 {
 	return @{
 			 JMisJailBronkenKey: @(self.isJailBroken),
-			 JMCanMockLocationKey: @(self.isJailBroken),
-			 JMisDebuggerAttachedKey: @(self.isDebuggerAttached)
+			 JMCanMockLocationKey: @(self.isJailBroken)
 			 };
 }
 
