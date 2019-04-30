@@ -10,6 +10,7 @@ public class RootedCheck {
     private static final String ONEPLUS = "oneplus";
     private static final String MOTO = "moto";
     private static final String XIAOMI = "xiaomi";
+    private static final String OPPO = "oppo";
 
     /**
      * Checks if the device is rooted.
@@ -24,6 +25,7 @@ public class RootedCheck {
         } else {
             check = new LessThan23();
         }
+
         return check.checkRooted() || rootBeerCheck(context);
     }
 
@@ -31,7 +33,8 @@ public class RootedCheck {
         RootBeer rootBeer = new RootBeer(context);
         Boolean rv;
         final String brand = Build.BRAND.toLowerCase();
-        if(brand.contains(ONEPLUS) || brand.contains(MOTO) || brand.contains(XIAOMI)) {
+
+        if(brand.contains(ONEPLUS) || brand.contains(MOTO) || brand.contains(XIAOMI) || brand.contains(OPPO)) {
             rv = rootBeer.isRootedWithoutBusyBoxCheck();
         } else {
             rv = rootBeer.isRooted();
