@@ -45,6 +45,7 @@ public class RootedCheck {
         return rv;
     }
 
+
     public static HashMap getRootedCheckInfoBreakdown(Context context){
         final String brand = Build.BRAND.toLowerCase();
         RootBeer rootBeer = new RootBeer(context);
