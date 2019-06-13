@@ -11,6 +11,8 @@ import java.io.*;
 import static com.gantix.JailMonkey.ExternalStorage.ExternalStorageCheck.isOnExternalStorage;
 import static com.gantix.JailMonkey.MockLocation.MockLocationCheck.isMockLocationOn;
 import static com.gantix.JailMonkey.Rooted.RootedCheck.isJailBroken;
+import static com.gantix.JailMonkey.Rooted.RootedCheck.getRootedCheckInfoBreakdown;
+import static com.gantix.JailMonkey.Rooted.RootedCheck.getRootBeerRootDetectionBreakdown;
 
 public class JailMonkeyModule extends ReactContextBaseJavaModule {
 
@@ -40,6 +42,11 @@ public class JailMonkeyModule extends ReactContextBaseJavaModule {
     final Map<String, Object> constants = new HashMap<>();
     boolean jailBreak = isJailBroken(context);
     boolean isMagiskHidden = isMagiskHidden();
+    
+    HashMap rootedCheckInfoBreakdown = getRootedCheckInfoBreakdown(context);
+    rootedCheckInfoBreakdown.put("isMagiskHidden", isMagiskHidden);
+    rootedCheckInfoBreakdown.put("rootBeerRootDetectionBreakdown", getRootBeerRootDetectionBreakdown(context));
+    constants.put("getRootedCheckInfoBreakdown", rootedCheckInfoBreakdown);
 
     constants.put("isJailBroken", jailBreak || isMagiskHidden);
     constants.put("canMockLocation", isMockLocationOn(context));

@@ -24,6 +24,9 @@ JailMonkey.trustFall()
 
 // (ANDROID ONLY) Check if application is running on external storage
 JailMonkey.isOnExternalStorage()
+
+// returns object with breakdown of the various jailbroken checks results
+JailMonkey.getRootedCheckInfoBreakdown()
 ```
 ![Circle of Trust](./_art/trust.jpg)
 
